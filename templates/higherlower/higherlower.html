@@ -21,8 +21,12 @@
         <div style="display: flex; align-content: center; width: 100%; justify-content: center;">
             <h1 style="text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white; color: black; font-size: 45px">{{ movie2.title }}</h1>
             <div style="position: absolute; bottom: 30%; justify-content: center; align-content: center">
-                <button style="padding: 15px 32px" type="button">Click Me!</button>
-                <button style="padding: 15px 32px" type="button">Click Me!</button>
+                <a href="/higherlower/{{ lower }};{{ score }};{{ movie2.id }}">
+                    <button style="padding: 15px 32px" type="button">lower</button>
+                </a>
+                <a href="/higherlower/{{ higher }};{{ score }};{{ movie2.id }}">
+                <button style="padding: 15px 32px" type="button">higher</button>
+                </a>
             </div>
         </div>
     </div>
