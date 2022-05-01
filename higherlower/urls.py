@@ -3,5 +3,5 @@ from . import views
 
 urlpatterns = [
     path('higherlower/<str:content>', views.higherlower),
-    path('lost/<int:score>', views.lost)
+    path('lost/<str:content>', views.lost),
 ]

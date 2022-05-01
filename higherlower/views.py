@@ -1,15 +1,17 @@
 from django.shortcuts import render, redirect
 import imdb
 import random
-from .models import Movie
+from .models import Movie, Scores
 
-def lost(request, score):
-    return render(request, "higherlower/lost.html", {'score': score})
+def lost(request, content):
+    tmp = content.split(';')
+    Scores.objects.create(score=int(tmp[1]), user=request.user.username, type=tmp[0])
+    return render(request, "higherlower/lost.html", {'score': tmp[1]})
 
 
 def higherlower(request,content):
     if content == 'new':
-        queryset = Movie.objects.filter(title__endswith='Dances with Wolves')#last title in Top250
+        queryset = Movie.objects.filter(id=1)#last title in Top250
         if not queryset.exists():
             print(queryset)
             ia = imdb.IMDb()
@@ -24,7 +26,7 @@ def higherlower(request,content):
         tmp = content.split(';')
         score = int(tmp[1])
         if int(tmp[0]) == 0:
-            return redirect(f'/lost/{score}')
+            return redirect(f'/lost/movie;{score}')
         score += 1
         movie1 = Movie.objects.filter(id=tmp[2])
         movie2 = Movie.objects.filter(id=random.randint(1, 250))
