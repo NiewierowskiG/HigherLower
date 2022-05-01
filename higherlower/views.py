@@ -41,3 +41,8 @@ def higherlower(request,content):
         lower = 1
     context = {'movie1': movie1[0], 'movie2': movie2[0], 'score': score, 'higher': higher, 'lower': lower}
     return render(request, "higherlower/higherlower.html", context)
+
+
+def leaderboard(request, content):
+    highscores = Scores.objects.filter(type=content).order_by('-score')
+    return render(request, "higherlower/leaderboard.html", {'highscores': highscores})
