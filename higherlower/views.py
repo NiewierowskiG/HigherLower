@@ -1,7 +1,20 @@
 from django.shortcuts import render, redirect
 import imdb
 import random
-from .models import Movie, Scores
+from .models import Movie, Scores,TvShow
+
+def set_higher_and_lower(review1, review2):
+    if float(review1) > float(review2):
+        higher = 0
+        lower = 1
+    elif float(review1) < float(review2):
+        higher = 1
+        lower = 0
+    else:
+        higher = 1
+        lower = 1
+    return higher, lower
+
 
 def lost(request, content):
     tmp = content.split(';')
@@ -9,7 +22,33 @@ def lost(request, content):
     return render(request, "higherlower/lost.html", {'score': tmp[1]})
 
 
-def higherlower(request,content):
+def show_higherlower(request, content):
+    if content == 'new':
+        queryset = TvShow.objects.filter(id=1)
+        if not queryset.exists():
+            ia = imdb.IMDb()
+            top_250_shows = ia.get_top250_tv()
+            for show in top_250_shows:
+                movietmp = ia.get_movie(show.movieID)
+                TvShow.objects.create(url=f"{movietmp['cover url'].split('_V1_', 1)[0]}.jpg", review=movietmp['rating'],
+                                     title=movietmp['title'])
+        show1 = TvShow.objects.filter(id=random.randint(1, 250))
+        show2 = TvShow.objects.filter(id=random.randint(1, 250))
+        score = 0
+    else:
+        tmp = content.split(';')
+        score = int(tmp[1])
+        if int(tmp[0]) == 0:
+            return redirect(f'/lost/show;{score}')
+        score += 1
+        show1 = TvShow.objects.filter(id=tmp[2])
+        show2 = TvShow.objects.filter(id=random.randint(1, 250))
+    higher, lower = set_higher_and_lower(show1[0].review, show2[0].review)
+    context = {'movie1': show1[0], 'movie2': show2[0], 'score': score, 'higher': higher, 'lower': lower, 'type': "show"}
+    return render(request, "higherlower/higherlower.html", context)
+
+
+def movie_higherlower(request,content):
     if content == 'new':
         queryset = Movie.objects.filter(id=1)#last title in Top250
         if not queryset.exists():
@@ -30,16 +69,8 @@ def higherlower(request,content):
         score += 1
         movie1 = Movie.objects.filter(id=tmp[2])
         movie2 = Movie.objects.filter(id=random.randint(1, 250))
-    if float(movie1[0].review) > float(movie2[0].review):
-        higher = 0
-        lower = 1
-    elif float(movie1[0].review) < float(movie2[0].review):
-        higher = 1
-        lower = 0
-    else:
-        higher = 1
-        lower = 1
-    context = {'movie1': movie1[0], 'movie2': movie2[0], 'score': score, 'higher': higher, 'lower': lower}
+    higher, lower = set_higher_and_lower(movie1[0].review, movie2[0].review)
+    context = {'movie1': movie1[0], 'movie2': movie2[0], 'score': score, 'higher': higher, 'lower': lower, 'type': "movie"}
     return render(request, "higherlower/higherlower.html", context)
 
 
