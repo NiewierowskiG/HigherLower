@@ -22,14 +22,12 @@
             <h1 style="text-shadow: -1px 0 white, 0 1px white, 1px 0 white, 0 -1px white; color: black; font-size: 45px">{{ movie2.title }}</h1>
             <div style="position: absolute; bottom: 30%; justify-content: center; align-content: center">
                 <form action="#" method="get">
-                    {% csrf_token %}
                     <input type="hidden" name="correct" value={{ lower }}>
                     <input type="hidden" name="movie_id" value={{ movie2.id }}>
                     <input type="hidden" name="score" value={{ score }}>
                     <input style="height: 50px; width: 200px" type="submit" class="btn" value="Lower" name="clicked">
                 </form>
                 <form action="#" method="get">
-                    {% csrf_token %}
                     <input type="hidden" name="correct" value={{ higher }}>
                     <input type="hidden" name="movie_id" value={{ movie2.id }}>
                     <input type="hidden" name="score" value={{ score }}>
