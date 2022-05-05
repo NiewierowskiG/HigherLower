@@ -29,8 +29,8 @@ def show_higherlower(request):
             Scores.objects.create(score=score, user=request.user.username, type="show")
             return render(request, "higherlower/lost.html", {'score': score, "type":"show"})
         score += 1
-        show1 = TvShow.objects.filter(id=(request.GET.get('movie_id')))
-        show2 = TvShow.objects.filter(id=random.randint(1, 250))
+        shows = list(TvShow.objects.all())
+        show1 = (TvShow.objects.filter(id=(request.GET.get('movie_id'))))[0]
     else:
         queryset = TvShow.objects.filter(id=1)
         if not queryset.exists():
@@ -40,11 +40,12 @@ def show_higherlower(request):
                 movietmp = ia.get_movie(show.movieID)
                 TvShow.objects.create(url=f"{movietmp['cover url'].split('_V1_', 1)[0]}.jpg", review=movietmp['rating'],
                                      title=movietmp['title'])
-        show1 = TvShow.objects.filter(id=random.randint(1, 250))
-        show2 = TvShow.objects.filter(id=random.randint(1, 250))
+        shows = list(TvShow.objects.all())
+        show1 = random.choice(shows)
         score = 0
-    higher, lower = set_higher_and_lower(show1[0].review, show2[0].review)
-    context = {'movie1': show1[0], 'movie2': show2[0], 'score': score, 'higher': higher, 'lower': lower, 'type': "show"}
+    show2 = random.choice(shows)
+    higher, lower = set_higher_and_lower(show1.review, show2.review)
+    context = {'movie1': show1, 'movie2': show2, 'score': score, 'higher': higher, 'lower': lower, 'type': "show"}
     return render(request, "higherlower/higherlower.html", context)
 
 
@@ -55,8 +56,8 @@ def movie_higherlower(request):
             Scores.objects.create(score=score, user=request.user.username, type="show")
             return render(request, "higherlower/lost.html", {'score': score, "type":"show"})
         score += 1
+        movies = list(Movie.objects.all())
         movie1 = TvShow.objects.filter(id=(request.GET.get('movie_id')))
-        movie2 = TvShow.objects.filter(id=random.randint(1, 250))
     else:
         queryset = Movie.objects.filter(id=1)#last title in Top250
         if not queryset.exists():
@@ -66,9 +67,11 @@ def movie_higherlower(request):
             for movie in Top250Movies:
                 movietmp = ia.get_movie(movie.movieID)
                 Movie.objects.create(url=f"{movietmp['cover url'].split('_V1_', 1)[0]}.jpg", review=movietmp['rating'], title=movietmp['title'])
-        movie1 = Movie.objects.filter(id=random.randint(1, 250))
-        movie2 = Movie.objects.filter(id=random.randint(1, 250))
+        movies = list(Movie.objects.all())
+        movie1 = random.choice(movies)
         score = 0
+    movie2 = random.choice(movies)
+    higher, lower = set_higher_and_lower(movie1[0].review, movie2[0].review)
     context = {'movie1': movie1[0], 'movie2': movie2[0], 'score': score, 'higher': higher, 'lower': lower, 'type': "movie"}
     return render(request, "higherlower/higherlower.html", context)
 
