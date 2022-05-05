@@ -22,8 +22,16 @@ def lost(request, content):
     return render(request, "higherlower/lost.html", {'score': tmp[1]})
 
 
-def show_higherlower(request, content):
-    if content == 'new':
+def show_higherlower(request):
+    if request.GET.get('clicked'):
+        score = int(request.GET.get('score'))
+        if int(request.GET.get('correct')) == 0:
+            Scores.objects.create(score=score, user=request.user.username, type="show")
+            return render(request, "higherlower/lost.html", {'score': score, "type":"show"})
+        score += 1
+        show1 = TvShow.objects.filter(id=(request.GET.get('movie_id')))
+        show2 = TvShow.objects.filter(id=random.randint(1, 250))
+    else:
         queryset = TvShow.objects.filter(id=1)
         if not queryset.exists():
             ia = imdb.IMDb()
@@ -35,21 +43,21 @@ def show_higherlower(request, content):
         show1 = TvShow.objects.filter(id=random.randint(1, 250))
         show2 = TvShow.objects.filter(id=random.randint(1, 250))
         score = 0
-    else:
-        tmp = content.split(';')
-        score = int(tmp[1])
-        if int(tmp[0]) == 0:
-            return redirect(f'/lost/show;{score}')
-        score += 1
-        show1 = TvShow.objects.filter(id=tmp[2])
-        show2 = TvShow.objects.filter(id=random.randint(1, 250))
     higher, lower = set_higher_and_lower(show1[0].review, show2[0].review)
     context = {'movie1': show1[0], 'movie2': show2[0], 'score': score, 'higher': higher, 'lower': lower, 'type': "show"}
     return render(request, "higherlower/higherlower.html", context)
 
 
-def movie_higherlower(request,content):
-    if content == 'new':
+def movie_higherlower(request):
+    if request.GET.get('clicked'):
+        score = int(request.GET.get('score'))
+        if int(request.GET.get('correct')) == 0:
+            Scores.objects.create(score=score, user=request.user.username, type="show")
+            return render(request, "higherlower/lost.html", {'score': score, "type":"show"})
+        score += 1
+        movie1 = TvShow.objects.filter(id=(request.GET.get('movie_id')))
+        movie2 = TvShow.objects.filter(id=random.randint(1, 250))
+    else:
         queryset = Movie.objects.filter(id=1)#last title in Top250
         if not queryset.exists():
             print(queryset)
@@ -61,15 +69,6 @@ def movie_higherlower(request,content):
         movie1 = Movie.objects.filter(id=random.randint(1, 250))
         movie2 = Movie.objects.filter(id=random.randint(1, 250))
         score = 0
-    else:
-        tmp = content.split(';')
-        score = int(tmp[1])
-        if int(tmp[0]) == 0:
-            return redirect(f'/lost/movie;{score}')
-        score += 1
-        movie1 = Movie.objects.filter(id=tmp[2])
-        movie2 = Movie.objects.filter(id=random.randint(1, 250))
-    higher, lower = set_higher_and_lower(movie1[0].review, movie2[0].review)
     context = {'movie1': movie1[0], 'movie2': movie2[0], 'score': score, 'higher': higher, 'lower': lower, 'type': "movie"}
     return render(request, "higherlower/higherlower.html", context)
 
