@@ -30,7 +30,7 @@ def show_higherlower(request):
             return render(request, "higherlower/lost.html", {'score': score, "type":"show"})
         score += 1
         shows = list(TvShow.objects.all())
-        show1 = (TvShow.objects.filter(id=(request.GET.get('movie_id'))))[0]
+        show1 = random.choice(shows)
     else:
         queryset = TvShow.objects.filter(id=1)
         if not queryset.exists():
