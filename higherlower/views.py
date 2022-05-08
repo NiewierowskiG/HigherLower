@@ -1,7 +1,8 @@
 from django.shortcuts import render, redirect
 import imdb
 import random
-from .models import Movie, Scores,TvShow
+from .models import Movie, Scores, TvShow
+
 
 def set_higher_and_lower(review1, review2):
     if float(review1) > float(review2):
@@ -27,10 +28,10 @@ def show_higherlower(request):
         score = int(request.GET.get('score'))
         if int(request.GET.get('correct')) == 0:
             Scores.objects.create(score=score, user=request.user.username, type="show")
-            return render(request, "higherlower/lost.html", {'score': score, "type":"show"})
+            return render(request, "higherlower/lost.html", {'score': score, "type": "show"})
         score += 1
         shows = list(TvShow.objects.all())
-        show1 = random.choice(shows)
+        show1 = TvShow.objects.get(id=request.GET.get('movie_id'))
     else:
         queryset = TvShow.objects.filter(id=1)
         if not queryset.exists():
@@ -39,7 +40,7 @@ def show_higherlower(request):
             for show in top_250_shows:
                 movietmp = ia.get_movie(show.movieID)
                 TvShow.objects.create(url=f"{movietmp['cover url'].split('_V1_', 1)[0]}.jpg", review=movietmp['rating'],
-                                     title=movietmp['title'])
+                                      title=movietmp['title'])
         shows = list(TvShow.objects.all())
         show1 = random.choice(shows)
         score = 0
@@ -54,25 +55,27 @@ def movie_higherlower(request):
         score = int(request.GET.get('score'))
         if int(request.GET.get('correct')) == 0:
             Scores.objects.create(score=score, user=request.user.username, type="show")
-            return render(request, "higherlower/lost.html", {'score': score, "type":"show"})
+            return render(request, "higherlower/lost.html", {'score': score, "type": "show"})
         score += 1
         movies = list(Movie.objects.all())
         movie1 = TvShow.objects.filter(id=(request.GET.get('movie_id')))
     else:
-        queryset = Movie.objects.filter(id=1)#last title in Top250
+        queryset = Movie.objects.filter(id=1)  # last title in Top250
         if not queryset.exists():
             print(queryset)
             ia = imdb.IMDb()
             Top250Movies = ia.get_top250_movies()
             for movie in Top250Movies:
                 movietmp = ia.get_movie(movie.movieID)
-                Movie.objects.create(url=f"{movietmp['cover url'].split('_V1_', 1)[0]}.jpg", review=movietmp['rating'], title=movietmp['title'])
+                Movie.objects.create(url=f"{movietmp['cover url'].split('_V1_', 1)[0]}.jpg", review=movietmp['rating'],
+                                     title=movietmp['title'])
         movies = list(Movie.objects.all())
         movie1 = random.choice(movies)
         score = 0
     movie2 = random.choice(movies)
     higher, lower = set_higher_and_lower(movie1[0].review, movie2[0].review)
-    context = {'movie1': movie1[0], 'movie2': movie2[0], 'score': score, 'higher': higher, 'lower': lower, 'type': "movie"}
+    context = {'movie1': movie1[0], 'movie2': movie2[0], 'score': score, 'higher': higher, 'lower': lower,
+               'type': "movie"}
     return render(request, "higherlower/higherlower.html", context)
 
 
