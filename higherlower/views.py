@@ -73,8 +73,8 @@ def movie_higherlower(request):
         movie1 = random.choice(movies)
         score = 0
     movie2 = random.choice(movies)
-    higher, lower = set_higher_and_lower(movie1[0].review, movie2[0].review)
-    context = {'movie1': movie1[0], 'movie2': movie2[0], 'score': score, 'higher': higher, 'lower': lower,
+    higher, lower = set_higher_and_lower(movie1.review, movie2.review)
+    context = {'movie1': movie1, 'movie2': movie2, 'score': score, 'higher': higher, 'lower': lower,
                'type': "movie"}
     return render(request, "higherlower/higherlower.html", context)
 
