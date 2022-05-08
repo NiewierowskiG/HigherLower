@@ -54,13 +54,13 @@ def movie_higherlower(request):
     if request.GET.get('clicked'):
         score = int(request.GET.get('score'))
         if int(request.GET.get('correct')) == 0:
-            Scores.objects.create(score=score, user=request.user.username, type="show")
-            return render(request, "higherlower/lost.html", {'score': score, "type": "show"})
+            Scores.objects.create(score=score, user=request.user.username, type="movie")
+            return render(request, "higherlower/lost.html", {'score': score, "type": "movie"})
         score += 1
         movies = list(Movie.objects.all())
         movie1 = TvShow.objects.get(id=(request.GET.get('movie_id')))
     else:
-        queryset = Movie.objects.filter(id=1)  # last title in Top250
+        queryset = Movie.objects.filter(id=250)
         if not queryset.exists():
             print(queryset)
             ia = imdb.IMDb()
