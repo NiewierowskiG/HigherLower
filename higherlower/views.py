@@ -58,7 +58,7 @@ def movie_higherlower(request):
             return render(request, "higherlower/lost.html", {'score': score, "type": "show"})
         score += 1
         movies = list(Movie.objects.all())
-        movie1 = TvShow.objects.filter(id=(request.GET.get('movie_id')))
+        movie1 = TvShow.objects.get(id=(request.GET.get('movie_id')))
     else:
         queryset = Movie.objects.filter(id=1)  # last title in Top250
         if not queryset.exists():
