@@ -1,3 +1,6 @@
+Hosted on: <br> 
+http://109.205.182.159:8000/higherlower/show - shows <br>
+http://109.205.182.159:8000/higherlower/movie - movies <br>
 A Higher Lower game, where you need to decide which one of the shows/movies has better reviews. 
 movies = Top 250 rated movies od IMDb
 shows = Top 250 rated shows od IMDb
